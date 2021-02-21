@@ -7,11 +7,14 @@
     <title>Resized Images</title>
 </head>
 <body>
-    <div style="display: flex; justify-content:space-evenly">
-        <div style="flex: 1;">
-            <img src="{{ asset($images[3]) }}" alt="" width="100%">
+    <div style="">
+        <div style="display: grid; place-items:center;">
+            <img src="{{ asset($originalImage) }}" alt="" style="max-width: 100%">
         </div>
-        <div style="flex: 1;">
+        <div style="width: 100%; display: flex; align-items:center; justify-content:center; gap: 1em;">
+            @foreach($images as $image)
+                <img src="{{ asset($image) }}" alt="" style="max-width: 100%">
+            @endforeach
         </div>
     </div>
 </body>

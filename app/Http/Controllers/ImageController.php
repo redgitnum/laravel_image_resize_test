@@ -53,8 +53,10 @@ class ImageController extends Controller
         $images = collect(Storage::files('public/images/'.$image))->map(function($file) {
             return Storage::url($file);
         });
+        $imgArray = array_reverse($images->toArray());
         return view('resized', [
-            'images' => $images
+            'originalImage' => $images->toArray()[3],
+            'images' => array_splice($imgArray, 1)
         ]);
     }
 }
