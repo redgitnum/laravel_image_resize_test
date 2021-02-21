@@ -9,7 +9,7 @@
 <body style="margin: 0; padding: 0">
     <div style="display: flex; justify-content:center; height: 100vh; align-items:center;">
         <div style="border:1px solid black; padding:1em;">
-            <form action="{{ route('upload') }}" method="POST">
+            <form action="{{ route('upload') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <label for="file">Select Image:</label>
                 <input type="file" name="file">
