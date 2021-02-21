@@ -15,27 +15,46 @@ class ImageController extends Controller
         $this->validate($request, [
             'file' => 'required|image'
         ]);
-        $path = $request->file->store('public/images');
-        return redirect()->route('image.options', [
-            'image' => $path
+        $originalFileName = Str::beforeLast($request->file->getClientOriginalName(), '.');
+        $originalFileExtension = $request->file->getClientOriginalExtension();
+        $image = Image::make($request->file);
+        if(!is_dir('storage/images/'.$originalFileName)){
+            mkdir('storage/images/'.$originalFileName, 0777, true);
+        }
+        $image->backup();
+        $image->save('storage/images/'.$originalFileName.'/'.$originalFileName.'.'.$originalFileExtension);
+        $image->resize(600, 600, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        });
+        $image->save('storage/images/'.$originalFileName.'/'.$originalFileName.'-600.'.$originalFileExtension);
+        $image->reset();
+        $image->resize(400, 400, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        });
+        $image->save('storage/images/'.$originalFileName.'/'.$originalFileName.'-400.'.$originalFileExtension);
+        $image->reset();
+        $image->resize(200, 200, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        });
+        $image->save('storage/images/'.$originalFileName.'/'.$originalFileName.'-200.'.$originalFileExtension);
+
+        return redirect()->route('view', [
+            'image' => $originalFileName
         ]);
         
     }
 
-    public function options($image)
+    public function view($image)
     {
-        return view('process', [
-            'image' => Storage::url($image),
-            'imageData' => $image
+        // $images = Storage::files('public/images/'.$image);
+        $images = collect(Storage::files('public/images/'.$image))->map(function($file) {
+            return Storage::url($file);
+        });
+        return view('resized', [
+            'images' => $images
         ]);
-    }
-
-    public function process(Request $request, $imageData)
-    {
-        $image = Storage::get($imageData);
-        $filename = Str::beforeLast(Str::afterLast($imageData, '/'), '.');
-        $ext = Str::afterLast($imageData, '.');
-        Image::make($image)->resize($request->width, $request->height)->save('storage/images/'.$filename.'resize.'.$ext);
-        return redirect('/');
     }
 }

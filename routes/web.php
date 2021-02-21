@@ -19,5 +19,4 @@ Route::get('/', function () {
 });
 
 Route::post('/upload', [ImageController::class, 'upload'])->name('upload');
-Route::get('/process/{image}', [ImageController::class, 'options'])->name('image.options')->where('image', '.*');;
-Route::post('/process/{image}', [ImageController::class, 'process'])->name('image.process')->where('image', '.*');;
+Route::get('/image/{image}', [ImageController::class, 'view'])->name('view');
